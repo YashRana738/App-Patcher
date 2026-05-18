@@ -15,12 +15,14 @@ venv/
 env/
 
 # Logs
-logs/
+logs/*
+!logs/.gitkeep
 *.log
 
 # Workspace sandbox
 workspace/decoded/
-workspace/temp/
+workspace/temp/*
+!workspace/temp/.gitkeep
 workspace/output/*
 !workspace/output/.gitkeep
 
