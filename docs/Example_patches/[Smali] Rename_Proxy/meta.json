@@ -1,0 +1,7 @@
+{
+  "name": "Rename_Proxy",
+  "description": "Rename media proxy to extension globally in all smali files",
+  "type": "smali",
+  "target": "smali",
+  "output": "patches/smali/Rename_Proxy.json"
+}

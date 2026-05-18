@@ -1,0 +1,7 @@
+{
+  "name": "dependecy_patch",
+  "description": "Adds hiddenapi to app",
+  "type": "inject",
+  "target": "/",
+  "output": "patches/Inject/NOS_Depencey/"
+}

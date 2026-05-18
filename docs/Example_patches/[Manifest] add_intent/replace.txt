@@ -1,0 +1,34 @@
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.VIEW" />
+                <action
+                    android:name="com.android.camera.action.REVIEW" />
+                <action
+                    android:name="android.provider.action.REVIEW" />
+                <action
+                    android:name="android.provider.action.REVIEW_SECURE" />
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+                <category
+                    android:name="android.intent.category.APP_GALLERY" />
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="content" />
+            </intent-filter>
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.VIEW" />
+                <action
+                    android:name="com.android.camera.action.REVIEW" />
+                <action
+                    android:name="android.provider.action.REVIEW" />
+                <action
+                    android:name="android.provider.action.REVIEW_SECURE" />
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+                <category
+                    android:name="android.intent.category.APP_GALLERY" />
+                <data
+                    android:mimeType="video/*"
+                    android:scheme="content" />
+            </intent-filter>

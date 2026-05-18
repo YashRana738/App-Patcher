@@ -1,0 +1,9 @@
+{
+  "name": "Force_Media_Taken_By_Nothing",
+  "description": "Bypasses the conditional check before sget-object to PROP_IS_MEDIA_TAKEN_BY_NOTHING_DEVICE",
+  "type": "smali",
+  "target": "",
+  "output": "patches/smali/Force_Media_Taken_By_Nothing.json",
+  "regex": true,
+  "flags": "MULTILINE"
+}

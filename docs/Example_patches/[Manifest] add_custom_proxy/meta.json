@@ -1,0 +1,6 @@
+{
+  "name": "Add_Custom_Proxy",
+  "description": "Add custom proxy permissions to manifest",
+  "type": "manifest",
+  "output": "patches/manifest/Add_Custom_Proxy.json"
+}

@@ -1,0 +1,11 @@
+{
+  "manifest_patches": [],
+  "resource_patches": [],
+  "smali_patches": [],
+  "inject_dirs": [],
+  "options": {
+    "skip_on_fail": true,
+    "strict_mode": false,
+    "log_level": "INFO"
+  }
+}

@@ -1,0 +1,1 @@
+([ \t]*)if-ne\s+\w+,\s+\w+,\s+:\w+\r?\n[ \t]*\r?\n([ \t]*sget-object\s+\w+,\s+L[^;]+;->PROP_IS_MEDIA_TAKEN_BY_NOTHING_DEVICE:L[^;]+;)

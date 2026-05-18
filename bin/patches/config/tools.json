@@ -1,0 +1,7 @@
+{
+  "java": "bin/tools/jdk-17.0.19+10-jre/bin/java.exe",
+  "apktool": "bin/tools/apktool.jar",
+  "ubersigner": "bin/tools/uber-apk-signer.jar",
+  "baksmali": "bin/tools/baksmali.jar",
+  "smali": "bin/tools/smali.jar"
+}

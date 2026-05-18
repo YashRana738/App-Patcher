@@ -1,0 +1,7 @@
+{
+  "name": "Link_patch",
+  "description": "Adds Telegram Link to Settings",
+  "type": "resources",
+  "target": "res/",
+  "output": "patches/resources/Link_patch.json"
+}

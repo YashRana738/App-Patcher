@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Logs
+logs/
+*.log
+
+# Workspace sandbox
+workspace/decoded/
+workspace/temp/
+workspace/output/*
+!workspace/output/.gitkeep
+
+workspace/input/*
+!workspace/input/.gitkeep
+
+workspace/keys/*
+!workspace/keys/.gitkeep
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
