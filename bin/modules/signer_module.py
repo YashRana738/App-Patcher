@@ -5,19 +5,17 @@ Handles the output file renaming that uber-apk-signer does
 (it appends "-aligned-debugSigned" to the filename).
 """
 
-import os
 import glob
+import os
 from typing import Dict, List, Optional
 
-
 from bin.modules import logger
-from bin.modules.shell import run_command
-from bin.modules.exceptions import SignError
 from bin.modules.config_loader import resolve_tool_path
+from bin.modules.exceptions import SignError
+from bin.modules.shell import run_command
 
 
-
-def _get_custom_keystore_args(project_root: str) -> list:
+def _get_custom_keystore_args(project_root: str) -> List[str]:
     """
     Check if a custom keystore or pk8/pem pair exists in workspace/keys/.
     If so, compile pk8/pem into a PKCS12 keystore (.p12) if needed, and
@@ -27,15 +25,13 @@ def _get_custom_keystore_args(project_root: str) -> list:
     if not os.path.isdir(keys_dir):
         return []
 
-    # 1. First, check if a compiled PKCS12 keystore (.p12) already exists
+    # 1. Check if a compiled PKCS12 keystore (.p12) already exists
     p12_files = [f for f in os.listdir(keys_dir) if f.endswith(".p12")]
-    
     if p12_files:
         p12_file = p12_files[0]
         base_name = os.path.splitext(p12_file)[0]
         p12_path = os.path.join(keys_dir, p12_file)
         
-        # Check if source pk8/pem keys exist to see if we need to regenerate/update
         pk8_path = os.path.join(keys_dir, f"{base_name}.pk8")
         pem_candidates = [
             f"{base_name}.x509.pem",
@@ -48,11 +44,10 @@ def _get_custom_keystore_args(project_root: str) -> list:
                 pem_path = os.path.join(keys_dir, candidate)
                 break
 
-        # If source keys are still present, check if p12 is outdated
         if os.path.isfile(pk8_path) and pem_path:
             if os.path.getmtime(p12_path) < os.path.getmtime(pk8_path) or \
                os.path.getmtime(p12_path) < os.path.getmtime(pem_path):
-                logger.info(f"Source keys updated. Regenerating PKCS12 keystore...")
+                logger.info("Source keys updated. Regenerating PKCS12 keystore...")
                 _generate_p12_keystore(pk8_path, pem_path, p12_path, base_name)
         
         logger.info(f"Using custom keystore for signing: {os.path.basename(p12_path)} (alias: {base_name})")
@@ -63,15 +58,14 @@ def _get_custom_keystore_args(project_root: str) -> list:
             "--ksKeyPass", "password"
         ]
 
-    # 2. If no .p12 exists, see if we have .pk8 and matching certificate to compile a new one
+    # 2. Check for .pk8 and matching certificate to compile new .p12
     pk8_files = [f for f in os.listdir(keys_dir) if f.endswith(".pk8")]
     if not pk8_files:
         return []
 
     pk8_file = pk8_files[0]
-    base_name = os.path.splitext(pk8_file)[0] # e.g. "testkey"
+    base_name = os.path.splitext(pk8_file)[0]
 
-    # Look for matching PEM certificate (.x509.pem, .pem, or .x509)
     pem_candidates = [
         f"{base_name}.x509.pem",
         f"{base_name}.pem",
@@ -84,7 +78,7 @@ def _get_custom_keystore_args(project_root: str) -> list:
             break
 
     if not pem_file:
-        logger.warning(f"Found private key {pk8_file} but no matching certificate in {keys_dir}")
+        logger.warn(f"Found private key {pk8_file} but no matching certificate in {keys_dir}")
         return []
 
     pk8_path = os.path.join(keys_dir, pk8_file)
@@ -108,9 +102,9 @@ def _generate_p12_keystore(pk8_path: str, pem_path: str, p12_path: str, base_nam
     logger.info(f"Generating PKCS12 keystore from {os.path.basename(pk8_path)} and {os.path.basename(pem_path)}...")
     try:
         from cryptography.hazmat.primitives.serialization import load_der_private_key
-        from cryptography.x509 import load_pem_x509_certificate
-        from cryptography.hazmat.primitives.serialization.pkcs12 import serialize_key_and_certificates
         from cryptography.hazmat.primitives.serialization import BestAvailableEncryption
+        from cryptography.hazmat.primitives.serialization.pkcs12 import serialize_key_and_certificates
+        from cryptography.x509 import load_pem_x509_certificate
 
         with open(pk8_path, "rb") as f:
             key_bytes = f.read()
@@ -134,7 +128,7 @@ def _generate_p12_keystore(pk8_path: str, pem_path: str, p12_path: str, base_nam
         return True
 
     except ImportError:
-        logger.warning(
+        logger.warn(
             "Python 'cryptography' library is required to sign with custom pk8/pem keys. "
             "Run 'pip install cryptography' to enable, or sign with default debug key."
         )
@@ -169,7 +163,6 @@ def sign_apk(
     java = resolve_tool_path("java", tools["java"], project_root)
     ubersigner = resolve_tool_path("ubersigner", tools["ubersigner"], project_root)
 
-
     logger.info("Signing APK...")
 
     cmd = [
@@ -189,10 +182,6 @@ def sign_apk(
     except Exception as e:
         raise SignError(f"Failed to sign APK: {e}")
 
-    # uber-apk-signer creates files like:
-    #   name-aligned-debugSigned.apk
-    #   name-aligned-signed.apk
-    # Find the signed output
     signed_apk = _find_signed_apk(apk_path)
 
     if signed_apk is None:
@@ -201,14 +190,12 @@ def sign_apk(
             f"Looked for variants of: {apk_path}"
         )
 
-    # Rename to a clean final name
     final_path = _make_final_path(apk_path)
     if signed_apk != final_path:
         if os.path.exists(final_path):
             os.remove(final_path)
         os.rename(signed_apk, final_path)
 
-    # Delete the unsigned APK now that we have the signed one
     if os.path.exists(apk_path) and apk_path != final_path:
         os.remove(apk_path)
         logger.debug(f"Removed unsigned APK: {os.path.basename(apk_path)}")
@@ -216,18 +203,13 @@ def sign_apk(
     size_mb = os.path.getsize(final_path) / (1024 * 1024)
     logger.success(f"APK signed: {final_path} ({size_mb:.1f} MB)")
 
-    # Clean up intermediate files from uber-apk-signer
     _cleanup_signer_artifacts(apk_path, final_path)
 
     return final_path
 
 
 def _find_signed_apk(original_path: str) -> Optional[str]:
-    """
-    Find the signed APK produced by uber-apk-signer.
-
-    It typically adds suffixes like -aligned-debugSigned or -aligned-signed.
-    """
+    """Find the signed APK produced by uber-apk-signer."""
     base = original_path.rsplit(".", 1)[0]
     candidates = [
         f"{base}-aligned-debugSigned.apk",
@@ -240,7 +222,6 @@ def _find_signed_apk(original_path: str) -> Optional[str]:
         if os.path.isfile(candidate):
             return candidate
 
-    # Fallback: glob for any *-signed* or *-aligned* variant
     pattern = f"{base}*signed*.apk"
     matches = glob.glob(pattern)
     if matches:
@@ -250,11 +231,7 @@ def _find_signed_apk(original_path: str) -> Optional[str]:
 
 
 def _make_final_path(original_path: str) -> str:
-    """
-    Generate a clean final filename from the original APK path.
-
-    e.g. workspace/output/ported.apk → workspace/output/ported-signed.apk
-    """
+    """Generate a clean final filename from the original APK path."""
     base, ext = os.path.splitext(original_path)
     return f"{base}_signed{ext}"
 
@@ -279,62 +256,3 @@ def _cleanup_signer_artifacts(original_path: str, final_path: str) -> None:
                 logger.debug(f"Cleaned up: {os.path.basename(pattern)}")
             except OSError:
                 pass
-
-
-def sign_apks_dir(
-    apks_dir: str,
-    tools: Dict[str, str],
-    project_root: str,
-) -> List[str]:
-    """
-    Sign all APKs within an extracted APKS directory using uber-apk-signer.
-
-    Args:
-        apks_dir:     Path to directory containing split APKs.
-        tools:        Tool paths dict from tools.json.
-        project_root: Absolute path to the project root.
-
-    Returns:
-        List of paths to all final signed APK files.
-
-    Raises:
-        SignError: If signing fails.
-    """
-    if not os.path.isdir(apks_dir):
-        raise SignError(f"APKS directory to sign not found: {apks_dir}")
-
-    java = resolve_tool_path("java", tools["java"], project_root)
-    ubersigner = resolve_tool_path("ubersigner", tools["ubersigner"], project_root)
-
-
-    logger.info(f"Signing all split APKs in: {apks_dir}")
-
-    cmd = [
-        java,
-        "-jar",
-        ubersigner,
-        "--apks",
-        apks_dir,
-        "--allowResign",
-        "--overwrite",
-    ]
-
-    custom_args = _get_custom_keystore_args(project_root)
-    if custom_args:
-        cmd.extend(custom_args)
-
-    try:
-        run_command(cmd, description="uber-apk-signer (apks directory)")
-    except Exception as e:
-        raise SignError(f"Failed to sign split APKs in directory: {e}")
-
-    signed_apks = []
-    for root, _, files in os.walk(apks_dir):
-        for f in files:
-            if f.lower().endswith(".apk"):
-                signed_apks.append(os.path.join(root, f))
-
-    logger.success(f"Signed {len(signed_apks)} split APKs in APKS bundle")
-    return signed_apks
-
-

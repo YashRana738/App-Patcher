@@ -10,11 +10,9 @@ import shutil
 from typing import Dict
 
 from bin.modules import logger
-from bin.modules.shell import run_command
-from bin.modules.exceptions import DecodeError
-
-
 from bin.modules.config_loader import resolve_tool_path
+from bin.modules.exceptions import DecodeError
+from bin.modules.shell import run_command
 
 
 def decode_apk(
@@ -41,12 +39,9 @@ def decode_apk(
     if not os.path.isfile(apk_path):
         raise DecodeError(f"Input APK not found: {apk_path}")
 
-    # Resolve tool paths
     java = resolve_tool_path("java", tools["java"], project_root)
     apktool = resolve_tool_path("apktool", tools["apktool"], project_root)
 
-
-    # Clean previous decode
     if os.path.isdir(output_dir):
         logger.debug(f"Removing previous decode: {output_dir}")
         shutil.rmtree(output_dir, ignore_errors=True)
@@ -58,7 +53,7 @@ def decode_apk(
         "-jar",
         apktool,
         "d",
-        "-f",              # force overwrite
+        "-f",
         apk_path,
         "-o",
         output_dir,
@@ -69,12 +64,10 @@ def decode_apk(
     except Exception as e:
         raise DecodeError(f"Failed to decode APK: {e}")
 
-    # Validate decoded structure
     manifest = os.path.join(output_dir, "AndroidManifest.xml")
     if not os.path.isfile(manifest):
         raise DecodeError(
-            f"Decoded APK is missing AndroidManifest.xml — "
-            f"apktool may have failed silently."
+            f"Decoded APK is missing AndroidManifest.xml — apktool may have failed silently."
         )
 
     logger.success(f"APK decoded to: {output_dir}")

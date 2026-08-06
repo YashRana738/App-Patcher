@@ -6,11 +6,9 @@ import os
 from typing import Dict
 
 from bin.modules import logger
-from bin.modules.shell import run_command
-from bin.modules.exceptions import BuildError
-
-
 from bin.modules.config_loader import resolve_tool_path
+from bin.modules.exceptions import BuildError
+from bin.modules.shell import run_command
 
 
 def build_apk(
@@ -24,11 +22,11 @@ def build_apk(
     Repack a decoded APK directory into an unsigned APK.
 
     Args:
-        decoded_dir: Path to the decoded APK directory.
-        output_apk:  Desired path for the output APK.
-        tools:       Tool paths dict from tools.json.
+        decoded_dir:  Path to the decoded APK directory.
+        output_apk:   Desired path for the output APK.
+        tools:        Tool paths dict from tools.json.
         project_root: Absolute path to the project root.
-        use_aapt2:   Whether to use --use-aapt2 flag.
+        use_aapt2:    Whether to use --use-aapt2 flag.
 
     Returns:
         The absolute path to the built (unsigned) APK.
@@ -39,8 +37,6 @@ def build_apk(
     java = resolve_tool_path("java", tools["java"], project_root)
     apktool = resolve_tool_path("apktool", tools["apktool"], project_root)
 
-
-    # Ensure output directory exists and target file is removed if present
     output_dir = os.path.dirname(output_apk)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -52,7 +48,6 @@ def build_apk(
             logger.debug(f"Could not remove existing output file {output_apk}: {e}")
 
     logger.info("Building APK...")
-
 
     cmd = [
         java,
@@ -73,9 +68,7 @@ def build_apk(
         raise BuildError(f"Failed to build APK: {e}")
 
     if not os.path.isfile(output_apk):
-        raise BuildError(
-            f"Build completed but output APK not found: {output_apk}"
-        )
+        raise BuildError(f"Build completed but output APK not found: {output_apk}")
 
     size_mb = os.path.getsize(output_apk) / (1024 * 1024)
     logger.success(f"APK built: {output_apk} ({size_mb:.1f} MB)")
