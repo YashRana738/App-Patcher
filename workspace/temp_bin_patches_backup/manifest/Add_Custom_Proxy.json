@@ -1,0 +1,6 @@
+{
+  "name": "Add_Custom_Proxy",
+  "description": "Add custom proxy permissions to manifest",
+  "find": "    <uses-permission android:name=\"com.nothing.gallery.media.proxy.permission.READ\"/>\n    <uses-permission android:name=\"com.nothing.gallery.media.proxy.permission.WRITE\"/>",
+  "replace": "    <uses-permission android:name=\"com.nothing.gallery.extension.permission.READ\" />\n    <uses-permission android:name=\"com.nothing.gallery.extension.permission.WRITE\" />"
+}

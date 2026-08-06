@@ -1,0 +1,9 @@
+{
+  "name": "Force_Nothing_remove_preinstall",
+  "description": "Forces isNothingDevice and isPreInstalled to always return true by injecting const/4 v, 0x1 and setting both fields",
+  "type": "smali",
+  "target": "",
+  "output": "patches/smali/Force_Nothing_remove_preinstall.json",
+  "regex": true,
+  "flags": "MULTILINE"
+}

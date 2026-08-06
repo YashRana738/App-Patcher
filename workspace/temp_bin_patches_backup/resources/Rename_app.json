@@ -1,0 +1,11 @@
+{
+  "name": "Rename_app",
+  "description": "Renames app from Nothing Gallery to Nothing",
+  "target": "res/",
+  "replacements": [
+    {
+      "find": ">Nothing Gallery<",
+      "replace": ">Gallery<"
+    }
+  ]
+}

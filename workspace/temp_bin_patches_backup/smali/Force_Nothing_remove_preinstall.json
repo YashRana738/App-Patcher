@@ -1,0 +1,17 @@
+{
+  "name": "Force_Nothing_remove_preinstall",
+  "description": "Forces isNothingDevice and isPreInstalled to always return true by injecting const/4 v, 0x1 and setting both fields",
+  "target": "",
+  "replacements": [
+    {
+      "find": "([ \\t]*)(iput-boolean (\\w+), (\\w+), (L[^;]+;)->isNothingDevice:Z)",
+      "replace": "\\1const/4 \\3, 0x1\n\\1\\2\n\\1iput-boolean \\3, \\4, \\5->isPreInstalled:Z"
+    },
+    {
+      "find": "([ \\t]*)(iput-boolean (\\w+), \\w+, L[^;]+;->isPreInstalled:Z)",
+      "replace": "\\1const/4 \\3, 0x1\n\\1\\2"
+    }
+  ],
+  "regex": true,
+  "flags": "MULTILINE"
+}
