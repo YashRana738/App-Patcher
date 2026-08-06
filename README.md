@@ -9,13 +9,17 @@ This repository contains the official **App-Patcher** port configuration and aut
 The Nothing Gallery port applies 8 targeted patches to remove vendor restrictions and enable all premium features on non-Nothing hardware:
 
 1. **`[Inject] dependency_patch`**: Injects native `com.nothing.NtFeaturesUtils` and `com.nothing.utils.Utils` dependency stubs to prevent app crashes on generic Android ROMs.
-2. **`[Manifest] add_custom_proxy`**: Redirects system service queries to local community stubs.
+2. **`[Manifest] add_custom_proxy`**: Enables **Fingerprint Authentication** for Nothing Private Space & Photos Bin/Trash. *(Requires the companion [Private Proxy APK](https://t.me/LigmaCore/14))*.
 3. **`[Manifest] add_intent`**: Restores system review/view image intents across non-NOS devices.
 4. **`[Res] Add_Link`**: Fixes light/dark theme resource references and UI text.
 5. **`[Res] Rename_app`**: Corrects app naming and branding strings.
 6. **`[Smali] Force_Media_Taken_By_Nothing`**: Enables Nothing Camera special features and watermarking for all photos.
 7. **`[Smali] Force_Nothing_remove_preinstall`**: Bypasses OS pre-install checks and system signature requirements.
 8. **`[Smali] Rename_Proxy`**: Rewrites proxy calls to use local injected helpers.
+
+> [!TIP]
+> **Private Space & Fingerprint Unlock:**
+> To use fingerprint protection for Private Space and the Trash Bin in Nothing Gallery on non-Nothing OS devices, install the companion **Private Proxy APK** from Telegram: [Download Private Proxy (https://t.me/LigmaCore/14)](https://t.me/LigmaCore/14).
 
 ---
 
