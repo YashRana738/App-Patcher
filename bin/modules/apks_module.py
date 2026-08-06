@@ -1,15 +1,18 @@
 """
-APKS module — handles extraction, base APK resolution, and repackaging for APKS/XAPK split bundles.
+APKS module — handles extraction, base APK resolution, and bundle-to-standalone conversion
+using REAndroid/APKEditor library or internal fallbacks.
 """
 
 import os
+import re
 import shutil
 import zipfile
 from typing import Dict, List, Optional
 
-
 from bin.modules import logger
+from bin.modules.config_loader import resolve_tool_path
 from bin.modules.exceptions import APKPorterError
+from bin.modules.shell import run_command
 
 
 class APKSError(APKPorterError):
@@ -21,8 +24,6 @@ def is_apks_file(file_path: str) -> bool:
     """Check if the given file path is an APKS/XAPK/APKM/APK+ bundle."""
     ext = os.path.splitext(file_path)[1].lower()
     return ext in [".apks", ".xapk", ".zip", ".apkm", ".apk+", ".apkp"]
-
-
 
 
 def extract_apks(apks_path: str, extract_dir: str) -> str:
@@ -89,43 +90,11 @@ def find_base_apk(extract_dir: str) -> str:
             return apk
 
     # 3. Default to first .apk found
-    logger.warning(f"Could not explicitly identify base.apk; using: {os.path.basename(apk_files[0])}")
+    logger.warn(f"Could not explicitly identify base.apk; using: {os.path.basename(apk_files[0])}")
     return apk_files[0]
 
 
-def repack_apks(extract_dir: str, output_apks_path: str) -> str:
-    """
-    Repack the extracted APKS directory into a final .apks zip file.
-
-    Args:
-        extract_dir:      Path containing extracted and signed APKs.
-        output_apks_path: Target path for the final .apks file.
-
-    Returns:
-        Absolute path to the output .apks file.
-    """
-    output_dir = os.path.dirname(output_apks_path)
-    if output_dir:
-        os.makedirs(output_dir, exist_ok=True)
-
-    logger.info(f"Repackaging APKS bundle to: {output_apks_path}")
-    try:
-        with zipfile.ZipFile(output_apks_path, 'w', zipfile.ZIP_DEFLATED) as zip_out:
-            for root, _, files in os.walk(extract_dir):
-                for f in files:
-                    # Skip intermediate unsigned / build artifacts if any
-                    if f.endswith("-unsigned.apk"):
-                        continue
-                    full_path = os.path.join(root, f)
-                    rel_path = os.path.relpath(full_path, extract_dir)
-                    zip_out.write(full_path, rel_path)
-    except Exception as e:
-        raise APKSError(f"Failed to repackage APKS bundle: {e}")
-
-import re
-
-
-def _get_max_dex_index(namelist: list) -> int:
+def _get_max_dex_index(namelist: List[str]) -> int:
     """Find the highest DEX index present in zip file namelist (e.g. classes3.dex -> 3)."""
     max_idx = 1
     for name in namelist:
@@ -197,10 +166,6 @@ def merge_all_split_apks(extract_dir: str, target_apk_path: str) -> None:
                         logger.debug(f"  Merged entry: {fname}")
 
     logger.success(f"Merged {merged_count} file(s) and {merged_dex_count} DEX bytecode file(s) from split APKs into standalone APK")
-
-
-from bin.modules.shell import run_command
-from bin.modules.config_loader import resolve_tool_path
 
 
 def merge_bundle_with_apkeditor(
@@ -293,7 +258,3 @@ def convert_to_standalone_apk(
     merge_all_split_apks(extract_dir, output_apk_path)
     logger.success(f"Converted bundle to complete standalone APK: {output_apk_path}")
     return output_apk_path
-
-
-
-
