@@ -1,0 +1,6 @@
+{
+  "name": "review_intent_patch",
+  "description": "Add REVIEW and REVIEW_SECURE intents to gallery image/video intent-filters",
+  "type": "manifest",
+  "output": "patches/manifest/review_intent_patch.json"
+}

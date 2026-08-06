@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Logs
+logs/*
+!logs/.gitkeep
+*.log
+
+# Workspace sandbox & build directories
+workspace/decoded/
+workspace/extracted_apks/
+workspace/converted_standalone.apk
+workspace/temp_built.apk
+workspace/*.apk
+workspace/temp/*
+!workspace/temp/.gitkeep
+
+
+# Output directory (generated build artifacts)
+workspace/output/*
+!workspace/output/.gitkeep
+
+# Input packages (ignore binaries)
+workspace/input/*
+!workspace/input/.gitkeep
+
+# Keystores / secrets
+
+workspace/keys/*.p12
+workspace/keys/*.jks
+workspace/keys/*.keystore
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

@@ -1,0 +1,14 @@
+{
+  "input_dir": "workspace/input",
+  "decode_dir": "workspace/decoded",
+  "build_dir": "workspace/build",
+  "output_dir": "workspace/output",
+  "temp_dir": "workspace/temp",
+  "log_dir": "logs",
+  "clean_before_build": true,
+  "keep_build": false,
+  "sign": true,
+  "use_aapt2": true,
+  "generate_report": true,
+  "verify_signature": true
+}
