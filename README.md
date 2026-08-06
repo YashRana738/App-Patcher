@@ -1,122 +1,95 @@
-# App-Patcher
+# App-Patcher Framework
 
-App-Patcher is a modular, configuration-driven framework for modifying Android APKs and APKS/XAPK/APKM split packages. It handles decompilation, manifest modification, resource adjustments, Smali bytecode patching, class injection, repacking, and signing through a unified, automated pipeline.
+**App-Patcher** is a production-grade, modular, configuration-driven Python framework for reverse engineering, patching, and converting Android APKs, APKS, XAPK, APKM, and APK+ split bundles into single standalone signed `.apk` files.
 
-Outputs are automatically converted and repackaged into a **single standalone signed `.apk` file** ready for installation.
+---
 
-For comprehensive details on creating patches, configuring regular expressions, and managing signing keys, refer to the [Patch Building Guide](docs/patch_building.md).
+## Key Features
+
+- **Split Bundle Merger:** Automatically converts `.apks`, `.xapk`, `.apkm`, and `.apk+` split bundles into a single standalone `.apk` using binary resource table remapping (`APKEditor.jar`) and native ABI/DEX re-indexing.
+- **Smali Bytecode Patching:** Find and replace smali instructions across all decompiled DEX trees (`smali/`, `smali_classes2/`, `smali_classes3/`, etc.).
+- **Manifest Patching:** Dynamic regex string replacement and XML tag injection into `AndroidManifest.xml`.
+- **Resource Modding:** Modify strings, colors, styles, and layout XML files in `res/values/` and subdirectories.
+- **Smali Class Injection:** Inject new Smali class trees and utility packages seamlessly.
+- **Automated Signing:** Signs output APKs with v1/v2/v3/v4 signatures using `uber-apk-signer` or custom PKCS12 / `.pk8` + `.pem` keys.
+- **CI/CD Ready:** Built-in GitHub Actions workflow supporting `workflow_dispatch` with remote package URLs.
 
 ---
 
 ## Quick Start
 
 ### 1. Requirements
-Ensure Python 3.8+ and Java (System JVM JDK 17+) are available.
+- Python 3.8+
+- Java (System JDK 17+)
+- `pip install -r requirements.txt`
+
+### 2. Basic Usage
+
+Place your target package (`.apk`, `.apks`, `.xapk`, `.apkm`) into `workspace/input/` and run:
+
 ```bash
-pip install -r requirements.txt
+# Decompile, patch, repack, and sign
+python porter.py
+
+# Process a specific package file
+python porter.py --input workspace/input/sample_app.apkm
+
+# Dry run mode (validate patches without building)
+python porter.py --dry-run
 ```
 
-### 2. Preparation
-Place the target `.apk`, `.apks`, `.xapk`, or `.apkm` package in the input directory:
-```text
-workspace/input/com.nothing.gallery_3.1.0.0723-301000.apkm
-```
+The final signed standalone `.apk` will be created in `workspace/output/`.
 
-### 3. Build Patches
-Compile source patch definitions from `patches/`:
+---
+
+## Creating Patches
+
+You can define patches in human-readable plain text format under `patches/` and compile them into JSON deployment configs:
+
 ```bash
 python patch_builder.py
 ```
 
-### 4. Execute Pipeline
-Run `porter.py` to process the package into a single standalone `.apk`:
-```bash
-# Standard execution (decode, patch, build single APK, and sign)
-python porter.py
-
-# Process a specific package
-python porter.py -i workspace/input/App_Bundle.apkm
-
-# Dry run mode (validates patches in-memory without building)
-python porter.py --dry-run
-```
-
-### 5. Output
-The final standalone APK will be output to:
-```text
-workspace/output/com.nothing.gallery_3.1.0.0723-301000_ported_signed.apk
-```
+For complete instructions on regex replacement syntax, smali tree injection, and custom keys, see the [Patch Building Guide](docs/patch_building.md).
 
 ---
 
-## GitHub Actions & Automated Releases
-
-This repository includes a GitHub Actions workflow (`.github/workflows/build.yml`) that automatically builds, patches, and publishes ported APK releases.
-
-### How GitHub Releases & CI Work:
-1. **Push & Tag Triggers:** Whenever code is pushed to `main` or `nothing_gallery`, GitHub Actions runs the patch builder and porter pipeline.
-2. **Automated Release Publishing:** When a release tag (e.g. `v1.0.0`) is pushed or manually triggered via **Workflow Dispatch**, GitHub Actions automatically compiles the single `.apk` file and publishes it directly to **GitHub Releases**.
-3. **Remote Package URLs:** You can trigger a build on GitHub Actions by supplying a direct URL to an `.apk` / `.apkm` file in the workflow dispatch inputs.
-
----
-
-## Repository Structure
+## Repository Layout
 
 ```text
 App-Patcher/
-├── .github/
-│   └── workflows/
-│       └── build.yml                # CI/CD pipeline & automated release publisher
-│
-├── bin/                             # Framework internals and compiled artifacts
-│   ├── modules/                     # Core execution modules (decompilation, APKS resolution, patching, signing)
-│   ├── patches/                     # Compiled JSON patch definitions
-│   │   └── config/                  # Global build configurations and patch indices
-│   └── tools/                       # Bundled CLI utilities (apktool, baksmali, smali, ubersigner)
-│
-├── docs/                            # Documentation
-│   └── patch_building.md            # Reference guide for patch creation
-│
-├── logs/                            # Execution logs
-│
-├── patches/                         # Source patch definitions (User-editable)
-│   ├── [Inject] dependency_patch/   
-│   ├── [Manifest] add_custom_proxy/ 
-│   ├── [Res] Add_Link/              
-│   ├── [Smali] Rename_Proxy/        
-│   └── ...
-│
-├── workspace/                       # Execution environment
-│   ├── input/                       # Source APK / APKS / APKM directory
-│   ├── keys/                        # Signing keystores and certificates
-│   └── output/                      # Final output directory (single standalone .apk)
-│
-├── LICENSE                          # Open source license
-├── README.md                        
-├── patch_builder.py                 # Compiles source patches into deployable JSON configurations
-└── porter.py                        # Orchestrator script for the patching pipeline
+├── .github/workflows/build.yml     # Automated CI/CD workflow
+├── bin/
+│   ├── modules/                    # Python core modules (decompilation, APKS resolution, patching, signing)
+│   ├── patches/config/             # Target patches configuration index
+│   └── tools/                      # CLI tools (apktool, APKEditor, ubersigner)
+├── docs/                           # Framework documentation
+├── patches/                        # Source patch definitions directory
+├── workspace/
+│   ├── input/                      # Input package directory
+│   ├── keys/                       # Custom keystores (.p12, .pk8, .pem)
+│   └── output/                     # Final standalone output APK directory
+├── patch_builder.py                # Compiles source patches into JSON definitions
+├── porter.py                       # Main CLI pipeline orchestrator
+└── README.md
 ```
 
 ---
 
-## Command-Line Interface
+## Command-Line Options
 
 | Argument | Short | Description |
 |----------|-------|-------------|
-| `--input` | `-i` | Path to the input APK, APKS, XAPK, or APKM package. |
-| `--config` | `-c` | Path to the patch configuration index (default: `bin/patches/config/patches.json`). |
-| `--output` | `-o` | Path for the final standalone output APK file. |
+| `--input` | `-i` | Path to input APK, APKS, XAPK, or APKM package. |
+| `--config` | `-c` | Path to patch config index (default: `bin/patches/config/patches.json`). |
+| `--output` | `-o` | Path for final standalone output APK file. |
 | `--dry-run` | | Decode and apply patches in-memory for verification purposes. |
-| `--keep-build` | | Prevent deletion of the decoded APK directory after execution. |
+| `--keep-build` | | Prevent deletion of decoded APK directory after execution. |
 | `--verbose` | `-v` | Enable DEBUG level logging. |
 | `--no-sign` | | Skip the APK signing phase. |
 
 ---
 
-## Legal & Trademark Disclaimer
+## License
 
-> [!IMPORTANT]
-> **Trademark Notice:**
-> **Nothing**, **Nothing OS**, **Nothing Gallery**, and all associated brand names, logos, assets, and software components are registered trademarks and intellectual property reserved by **Nothing Technology Limited**.
->
-> **App-Patcher** is an independent, community-driven framework created strictly for research, portability, educational, and interoperability purposes. This repository is **not affiliated with, authorized, maintained, sponsored, or endorsed** by Nothing Technology Limited or any of its subsidiaries.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
