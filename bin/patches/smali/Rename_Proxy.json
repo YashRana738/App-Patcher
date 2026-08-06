@@ -1,0 +1,15 @@
+{
+  "name": "Rename_Proxy",
+  "description": "Rename media proxy to extension globally in all smali files",
+  "target": "smali",
+  "replacements": [
+    {
+      "find": "com.nothing.gallery.media.proxy",
+      "replace": "com.nothing.gallery.extension"
+    },
+    {
+      "find": "com/nothing/gallery/media/proxy",
+      "replace": "com/nothing/gallery/extension"
+    }
+  ]
+}

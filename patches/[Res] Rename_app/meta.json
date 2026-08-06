@@ -1,0 +1,7 @@
+{
+  "name": "Rename_app",
+  "description": "Renames app from Nothing Gallery to Nothing",
+  "type": "resources",
+  "target": "res/",
+  "output": "patches/resources/Rename_app.json"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Link_patch",
+  "description": "Adds Telegram Link to Settings",
+  "target": "res/",
+  "replacements": [
+    {
+      "find": "https://provision.nothingtech.link/gallery/light.html",
+      "replace": "https://t.me/LigmaCore"
+    },
+    {
+      "find": "https://provision.nothingtech.link/gallery/dark.html",
+      "replace": "https://t.me/LigmaCore"
+    },
+    {
+      "find": ">Privacy policy<",
+      "replace": ">Ported By @El_pong<"
+    }
+  ]
+}
