@@ -1,8 +1,0 @@
-{
-  "java": "java",
-  "apktool": "bin/tools/apktool.jar",
-  "ubersigner": "bin/tools/uber-apk-signer.jar",
-  "apkeditor": "bin/tools/APKEditor.jar",
-  "baksmali": "bin/tools/baksmali.jar",
-  "smali": "bin/tools/smali.jar"
-}
